@@ -1,0 +1,120 @@
+version: 2
+
+metrics:
+  # Simple metrics
+  - name: page_visit_duration
+    description: The total time spent on each page
+    type: simple
+    label: Page Visit Duration (Secs)
+    type_params:
+      measure: page_visit_duration
+
+saved_queries:
+  - name: dogs_by_pack_department
+    description: Number of Dogs in each Pack Department
+    config:
+      cache:
+        enabled: true
+    query_params:
+      metrics:
+        - count_dog
+
+      group_by:
+        - Dimension('employee_id__pack_department')
+        - Dimension('employee_id__bark_name')
+        - Dimension('employee_id__breed_title')
+        - Dimension('kennel_id__kennel_name',['employee_id'])
+        - Dimension('pack_id__pack_name',['employee_id'])
+    exports:
+      - name: dogs_by_department
+        config:
+          export_as: table
+          schema: aa_metrics
+
+  - name: interactions_by_breed_per_site
+    description: Tableau Activity Log Information broken down by the Top Dogs
+    config:
+      cache:
+        enabled: true
+    query_params:
+      metrics:
+        - count_activity_log
+        - page_visit_duration
+
+      group_by:
+        - Dimension('activity_log__view_repo_url')
+        - Dimension('employee_id__pack_department')
+        - Dimension('employee_id__bark_name')
+        - Dimension('employee_id__breed_title')
+        - Dimension('kennel_id__kennel_name',['employee_id'])
+        - Dimension('pack_id__pack_name',['employee_id'])
+
+
+    exports:
+      - name: interactions_by_breed_per_site
+        config:
+          export_as: table
+          schema: aa_metrics
+
+  - name: average_pawformance_rating_by_pack
+    description: Trick Performance as rated by fellow pawfessionals
+    config:
+      cache:
+        enabled: true
+    query_params:
+      metrics:
+        - overall_paw_rating
+
+      group_by:
+        - Dimension('rating_id__trick_description')
+        - Dimension('pack_id__pack_name',['employee_id'])
+        - Dimension('pack_id__howl',['employee_id'])
+
+
+    exports:
+      - name: average_pawformance_rating_by_pack
+        config:
+          export_as: table
+          schema: aa_metrics
+
+  - name: most_pawpular_trick_per_pack
+    description: The most commonly known tricks per pack
+    config:
+      cache:
+        enabled: true
+    query_params:
+      metrics:
+        - trick_count
+
+      group_by:
+        - Dimension('rating_id__trick_description')
+        - Dimension('pack_id__pack_name',['employee_id'])
+
+
+    exports:
+      - name: most_pawpular_trick_per_pack
+        config:
+          export_as: table
+          schema: aa_metrics
+
+  - name: total_toys_owned_per_region
+    description: The regions which own the most toys
+    config:
+      cache:
+        enabled: true
+    query_params:
+      metrics:
+        - total_toys_owned
+
+      group_by:
+        - Dimension('kennel_id__kennel_name',['employee_id'])
+        - Dimension('kennel_id__state_where',['employee_id'])
+        - Dimension('kennel_id__city_where',['employee_id'])
+        - Dimension('kennel_id__zip_code_howl',['employee_id'])
+
+
+    exports:
+      - name: total_toys_owned_per_region
+        config:
+          export_as: table
+          schema: aa_metrics
